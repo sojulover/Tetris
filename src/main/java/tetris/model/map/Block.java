@@ -1,0 +1,35 @@
+package tetris.model.map;
+
+import lombok.Getter;
+
+public class Block {
+
+    @Getter
+    private int[][] form;
+
+    public Block(BlockType blockType) {
+        this.form = blockType.getDefaultForm();
+    }
+
+    public int[][] rotateAndGetForm() {
+
+        this.rotate();
+
+        return this.form;
+    }
+
+    public void rotate() {
+
+        int[][] rotated = new int[this.form[0].length][this.form.length];
+
+        for (int i = 0; i < this.form.length; i++) {
+
+            for (int j = 0; j < this.form[0].length; j++) {
+
+                rotated[j][this.form.length - 1 - i] = this.form[i][j];
+            }
+        }
+
+        this.form = rotated;
+    }
+}
