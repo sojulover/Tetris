@@ -1,8 +1,5 @@
-HELP.md
-target/
-!.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**
-!**/src/test/**
+.gradle
+!gradle/wrapper/gradle-wrapper.jar
 
 ### STS ###
 .apt_generated
@@ -18,6 +15,7 @@ target/
 *.iws
 *.iml
 *.ipr
+/out/
 
 ### NetBeans ###
 /nbproject/private/
@@ -25,7 +23,17 @@ target/
 /dist/
 /nbdist/
 /.nb-gradle/
-build/
 
-### VS Code ###
-.vscode/
+### Application ###
+.DS_Store
+build/
+/log/
+/test/
+/package/dist/
+/package/out/
+
+*.class
+
+## ETC ###
+atlassian-ide-plugin.xml
+application.pid
