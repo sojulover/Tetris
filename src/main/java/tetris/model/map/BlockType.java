@@ -45,4 +45,9 @@ public enum BlockType {
 
     @Getter
     private int[][] defaultForm;
+
+    public static BlockType pickRandom() {
+
+        return BlockType.values()[(int) (Math.random() * BlockType.values().length)];
+    }
 }

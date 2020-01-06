@@ -7,7 +7,13 @@ public class Block {
     @Getter
     private int[][] form;
 
+    public static Block newRandom() {
+
+        return new Block(BlockType.pickRandom());
+    }
+
     public Block(BlockType blockType) {
+
         this.form = blockType.getDefaultForm();
     }
 
