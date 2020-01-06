@@ -25,7 +25,6 @@ public class Map {
 
                 System.out.print(this.tiles[y][x] + " ");
             }
-
             System.out.println();
         }
     }
