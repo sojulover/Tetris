@@ -13,7 +13,7 @@ public class Map {
     public Map(int[][] tiles) {
 
         this.tiles = tiles;
-        this.centerX = tiles.length / 2;
+        this.centerX = tiles[0].length / 2;
         this.centerY = 0;
     }
 
@@ -28,5 +28,31 @@ public class Map {
 
             System.out.println();
         }
+    }
+
+    public boolean isEmpty(int toX, int toY, int[][] toForm) {
+
+
+        for (int y = 0; y < toForm.length; y++) {
+
+
+            for (int x = 0; x < toForm[0].length; x++) {
+
+                boolean shouldCheck = toForm[y][x] > 0;
+                boolean isFilled = isFilled(y + toY, x + toX);
+
+                if (shouldCheck && isFilled) {
+
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    public boolean isFilled(int x, int y) {
+
+        return this.tiles[y][x] > 0;
     }
 }

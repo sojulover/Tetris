@@ -1,9 +1,11 @@
 package tetris.model.map;
 
 import lombok.Getter;
+import lombok.Setter;
 
 public class Block {
 
+    @Setter
     @Getter
     private int[][] form;
 
