@@ -36,25 +36,33 @@ public abstract class AbstractGame implements Game {
 
             case blockLeft:
 
-                toX = this.position.getX() - point;
+                toX = this.getPosition().getX() - point;
                 toY = this.getPosition().getY();
-                toForm = this.getBlocks().getCurrentBlock().getForm();
+                toForm = this.getCurrentBlock().getForm();
                 break;
 
             case blockRight:
 
-                toX = this.position.getX() + point;
+                toX = this.getPosition().getX() + point;
                 toY = this.getPosition().getY();
-                toForm = this.getBlocks().getCurrentBlock().getForm();
+                toForm = this.getCurrentBlock().getForm();
                 break;
 
             case blockDown:
 
-                toX = this.position.getX();
+                toX = this.getPosition().getX();
                 toY = this.getPosition().getY() + point;
-                toForm = this.getBlocks().getCurrentBlock().getForm();
+                toForm = this.getCurrentBlock().getForm();
                 break;
 
+            case blockHit:
+
+                toX = this.getPosition().getX();
+                toY = this.getYWhenHit();
+
+                this.hit(toX, toY);
+
+                return;
             default:
 
                 throw new UserControlException.Builder(UserControlExceptionTypes.wrongControl)
@@ -63,10 +71,10 @@ public abstract class AbstractGame implements Game {
 
         validation(toX, toY);
 
-        if (this.map.isEmpty(toX, toY, toForm)) {
+        if (this.getMap().isEmpty(toX, toY, toForm)) {
 
-            this.position.move(toX, toY);
-            this.blocks.getCurrentBlock().setForm(toForm);
+            this.getPosition().move(toX, toY);
+            this.getCurrentBlock().setForm(toForm);
         }
     }
 
@@ -79,36 +87,78 @@ public abstract class AbstractGame implements Game {
         }
     }
 
-    public int[][] getSnapshot() throws UserControlException {
+    private void hit(int x, int y) {
 
-        int[][] form = this.blocks.getCurrentBlock().getForm();
+        int[][] form = this.getCurrentBlock().getForm();
 
-        int currentX = this.position.getX();
-        int currentY = this.position.getY();
+        for (int i = 0; i < form.length; i++) {
 
-        for (int y = 0; y < form.length; y++) {
+            for (int j = 0; j < form[0].length; j++) {
 
-            for (int x = 0; x < form[0].length; x++) {
+                this.getMap().getTiles()[y + i][x + j] = form[j][i];
+            }
+        }
+    }
 
-                int blockValue = form[y][x];
-                boolean isBlockFilled = blockValue > 0;
-                if (isBlockFilled && this.map.isFilled(currentX + x, currentY + y)) {
+    private int getYWhenHit() {
 
-                    throw new UserControlException.Builder(UserControlExceptionTypes.gameOver)
-                            .build();
-                } else {
+        int currentX = this.getPosition().getX();
+        int currentXRight = currentX + this.getCurrentBlock().getForm()[0].length - 1;
 
-                    this.map.getTiles()[currentX + x][currentY + y] = blockValue;
+        int currentY = this.getPosition().getY();
+        int currentYBottom = this.getPosition().getY() + this.getCurrentBlock().getForm().length - 1;
+
+        int[][] tiles = this.getMap().getTiles();
+
+        for (int i = currentYBottom + 1; i < this.getMap().getHeight(); i++) {
+
+            for (int j = currentX; j <= currentXRight; j++) {
+
+                if (tiles[j][i] > 0) {
+
+                    return i - 1;
                 }
             }
         }
 
-        return this.map.getTiles();
+        return this.getMap().getHeight() - 1;
     }
+
+    private Block getCurrentBlock() {
+
+        return this.getBlocks().getCurrentBlock();
+    }
+//
+//    public int[][] getSnapshot() throws UserControlException {
+//
+//        int[][] form = this.blocks.this.getCurrentBlock().getForm();
+//
+//        int currentX = this.getPosition().getX();
+//        int currentY = this.getPosition().getY();
+//
+//        for (int y = 0; y < form.length; y++) {
+//
+//            for (int x = 0; x < form[0].length; x++) {
+//
+//                int blockValue = form[y][x];
+//                boolean isBlockFilled = blockValue > 0;
+//                if (isBlockFilled && this.getMap().isFilled(currentX + x, currentY + y)) {
+//
+//                    throw new UserControlException.Builder(UserControlExceptionTypes.gameOver)
+//                            .build();
+//                } else {
+//
+//                    this.getMap().getTiles()[currentY + y][currentX + x] = blockValue;
+//                }
+//            }
+//        }
+//
+//        return this.getMap().getTiles();
+//    }
 
     @Getter
     @ToString
-    private class Blocks {
+    public class Blocks {
 
         private Block currentBlock;
         private Block nextBlock;

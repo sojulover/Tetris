@@ -3,10 +3,12 @@ package tetris.model.map;
 import lombok.Getter;
 import lombok.Setter;
 
+
+@Getter
 public class Block {
 
+    private final BlockType type;
     @Setter
-    @Getter
     private int[][] form;
 
     public static Block newRandom() {
@@ -16,6 +18,7 @@ public class Block {
 
     public Block(BlockType blockType) {
 
+        this.type = blockType;
         this.form = blockType.getDefaultForm();
     }
 

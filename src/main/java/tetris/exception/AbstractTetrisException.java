@@ -6,7 +6,7 @@ public abstract class AbstractTetrisException extends Exception {
 
     public AbstractTetrisException(TetrisExceptionTypes type) {
 
-        super();
+        super(String.format("%d", type.getSerialNumber()));
 
         this.type = type;
     }

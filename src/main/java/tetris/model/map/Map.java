@@ -55,4 +55,9 @@ public class Map {
 
         return this.tiles[y][x] > 0;
     }
+
+    public int getHeight() {
+
+        return this.getTiles().length;
+    }
 }
