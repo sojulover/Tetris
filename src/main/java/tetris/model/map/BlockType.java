@@ -5,10 +5,10 @@ import lombok.Getter;
 public enum BlockType {
 
     I(new int[][]{
-            {1, 0},
-            {1, 0},
-            {1, 0},
-            {1, 0}
+            {1},
+            {1},
+            {1},
+            {1}
     }),
     J(new int[][]{
             {0, 2},

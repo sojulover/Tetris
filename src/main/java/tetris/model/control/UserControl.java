@@ -1,17 +1,21 @@
 package tetris.model.control;
 
+import lombok.Getter;
+
 public enum UserControl implements Control {
 
-    blockDown,
-    blockLeft,
-    blockRight,
-    blockHit,
-    blockRotate,
+    blockDown(true),
+    blockLeft(true),
+    blockRight(true),
+    blockHit(false),
+    blockRotate(false),
 
     ;
 
-    @Override
-    public boolean isValid() {
-        return false;
+    @Getter
+    private boolean moving;
+
+    UserControl(boolean moving) {
+        this.moving = moving;
     }
 }

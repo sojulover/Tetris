@@ -40,21 +40,34 @@ public class Run {
             int[][] tiles = deepCopy(normalGame.getMap().getTiles());
             for (int i = 0; i < normalGame.getBlocks().getCurrentBlock().getForm().length; i++) {
 
+                int currentY = i + normalGame.getPosition().getY();
+                if (currentY < 0) {
+
+                    continue;
+                }
+
                 for (int j = 0; j < normalGame.getBlocks().getCurrentBlock().getForm()[0].length; j++) {
 
-                    tiles[i + normalGame.getPosition().getY()][j + normalGame.getPosition().getX()] = normalGame.getBlocks().getCurrentBlock().getForm()[i][j];
+                    if (normalGame.getBlocks().getCurrentBlock().getForm()[i][j] == 0) {
+
+                        continue;
+                    }
+
+                    tiles[currentY][j + normalGame.getPosition().getX()] = normalGame.getBlocks().getCurrentBlock().getForm()[i][j];
                 }
             }
 
 
             for (int i = 0; i < tiles.length; i++) {
 
+                System.out.print(String.format("[%02d] |", i));
+
                 for (int j = 0; j < tiles[0].length; j++) {
 
                     System.out.print(tiles[i][j] + " ");
                 }
 
-                System.out.println();
+                System.out.println("|");
             }
         }
     }

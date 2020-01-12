@@ -94,10 +94,10 @@ class BlockTypeTest {
                 {2, 2},
         });
 
-        jBlock.rotate();
-        print(jBlock.getForm());
+        int[][] rotated = jBlock.rotate();
+        print(rotated);
 
-        Assertions.assertArrayEquals(jBlock.getForm(), new int[][]{
+        Assertions.assertArrayEquals(rotated, new int[][]{
                 {2, 0, 0},
                 {2, 2, 2}
         });

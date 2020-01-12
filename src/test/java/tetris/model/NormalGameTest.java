@@ -14,11 +14,20 @@ public class NormalGameTest {
 
         NormalGame normalGame = new NormalGame(new SimpleMapFactory().create());
         Map map = normalGame.getMap();
-        map.printToConsole();
+
+        for (int y = 0; y < map.getTiles().length; y++) {
+
+            for (int x = 0; x < map.getTiles()[y].length; x++) {
+
+                System.out.print(map.getTiles()[y][x] + " ");
+            }
+
+            System.out.println();
+        }
     }
 
     @Test
-    void testTDDLeft() throws UserControlException {
+    void testLeft() throws UserControlException {
 
 //        NormalGame normalGame = new NormalGame(new SimpleMapFactory().create());
 //

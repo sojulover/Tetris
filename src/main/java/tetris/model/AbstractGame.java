@@ -23,10 +23,45 @@ public abstract class AbstractGame implements Game {
         this.map = map;
 
         this.blocks = new Blocks();
-        this.position = new Position(this.map);
+        this.position = Position.newPosition(this.map, this.getCurrentBlock());
     }
 
     public void command(UserControl control, int point) throws UserControlException {
+
+        if (control.isMoving()) {
+
+            moveBlock(control, point);
+        } else {
+
+            if (control == UserControl.blockRotate) {
+
+                int[][] rotated = this.getCurrentBlock().rotate();
+                boolean rotatable = this.getMap().isEmpty(this.getPosition().getX(), this.getPosition().getY(), rotated);
+
+                if (rotatable) {
+
+                    this.getCurrentBlock().setForm(rotated);
+                } else {
+
+                    throw new UserControlException.Builder(UserControlExceptionTypes.blocked)
+                            .build();
+                }
+            } else if (control == UserControl.blockHit) {
+
+                this.hit(this.getPosition().getX(), this.getYWhenHit());
+                this.blocks.next();
+                this.position = Position.newPosition(this.map, this.getCurrentBlock());
+            } else {
+
+                throw new UserControlException.Builder(UserControlExceptionTypes.wrongControl)
+                        .build();
+            }
+        }
+
+        postCommand();
+    }
+
+    private void moveBlock(UserControl control, int point) throws UserControlException {
 
         final int toX;
         final int toY;
@@ -55,14 +90,6 @@ public abstract class AbstractGame implements Game {
                 toForm = this.getCurrentBlock().getForm();
                 break;
 
-            case blockHit:
-
-                toX = this.getPosition().getX();
-                toY = this.getYWhenHit();
-
-                this.hit(toX, toY);
-
-                return;
             default:
 
                 throw new UserControlException.Builder(UserControlExceptionTypes.wrongControl)
@@ -78,9 +105,37 @@ public abstract class AbstractGame implements Game {
         }
     }
 
+
+    private void postCommand() throws UserControlException {
+
+        if (isGameOver()) {
+
+            throw new UserControlException.Builder(UserControlExceptionTypes.gameOver)
+                    .build();
+        }
+    }
+
+    private boolean isGameOver() {
+
+        int[][] tiles = this.map.getTiles();
+        for (int i = 0; i < tiles[0].length; i++) {
+
+            if (tiles[0][i] > 0) {
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private void validation(int toX, int toY) throws UserControlException {
 
-        if (toX < 0 || toY > map.getTiles().length) {
+        boolean isLeftEnded = toX < 0;
+        boolean isRightEnded = toX > this.map.getTiles()[0].length;
+        boolean isBottomEnded = toY > map.getTiles().length;
+
+        if (isLeftEnded || isRightEnded || isBottomEnded) {
 
             throw new UserControlException.Builder(UserControlExceptionTypes.blocked)
                     .build();
@@ -93,68 +148,47 @@ public abstract class AbstractGame implements Game {
 
         for (int i = 0; i < form.length; i++) {
 
+            if ((y + i) < 0) {
+
+                continue;
+            }
+
             for (int j = 0; j < form[0].length; j++) {
 
-                this.getMap().getTiles()[y + i][x + j] = form[j][i];
+                try {
+
+                    if (form[i][j] > 0) {
+
+                        this.getMap().getTiles()[y + i][x + j] = form[i][j];
+                    }
+                } catch (Exception e) {
+
+                    System.out.println(e);
+                }
             }
         }
     }
 
     private int getYWhenHit() {
 
-        int currentX = this.getPosition().getX();
-        int currentXRight = currentX + this.getCurrentBlock().getForm()[0].length - 1;
-
-        int currentY = this.getPosition().getY();
-        int currentYBottom = this.getPosition().getY() + this.getCurrentBlock().getForm().length - 1;
-
+        int[][] form = this.getCurrentBlock().getForm();
         int[][] tiles = this.getMap().getTiles();
 
-        for (int i = currentYBottom + 1; i < this.getMap().getHeight(); i++) {
+        for (int i = this.position.getY() + 1; i <= tiles.length - form.length; i++) {
 
-            for (int j = currentX; j <= currentXRight; j++) {
+            if (!this.map.isEmpty(this.position.getX(), i, this.getCurrentBlock().getForm())) {
 
-                if (tiles[j][i] > 0) {
-
-                    return i - 1;
-                }
+                return i - 1;
             }
         }
 
-        return this.getMap().getHeight() - 1;
+        return this.getMap().getHeight() - form.length;
     }
 
     private Block getCurrentBlock() {
 
         return this.getBlocks().getCurrentBlock();
     }
-//
-//    public int[][] getSnapshot() throws UserControlException {
-//
-//        int[][] form = this.blocks.this.getCurrentBlock().getForm();
-//
-//        int currentX = this.getPosition().getX();
-//        int currentY = this.getPosition().getY();
-//
-//        for (int y = 0; y < form.length; y++) {
-//
-//            for (int x = 0; x < form[0].length; x++) {
-//
-//                int blockValue = form[y][x];
-//                boolean isBlockFilled = blockValue > 0;
-//                if (isBlockFilled && this.getMap().isFilled(currentX + x, currentY + y)) {
-//
-//                    throw new UserControlException.Builder(UserControlExceptionTypes.gameOver)
-//                            .build();
-//                } else {
-//
-//                    this.getMap().getTiles()[currentY + y][currentX + x] = blockValue;
-//                }
-//            }
-//        }
-//
-//        return this.getMap().getTiles();
-//    }
 
     @Getter
     @ToString
@@ -166,6 +200,12 @@ public abstract class AbstractGame implements Game {
         private Blocks() {
 
             this.currentBlock = Block.newRandom();
+            this.nextBlock = Block.newRandom();
+        }
+
+        private void next() {
+
+            this.currentBlock = nextBlock;
             this.nextBlock = Block.newRandom();
         }
     }

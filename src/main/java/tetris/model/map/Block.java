@@ -24,12 +24,11 @@ public class Block {
 
     public int[][] rotateAndGetForm() {
 
-        this.rotate();
-
+        this.form = this.rotate();
         return this.form;
     }
 
-    public void rotate() {
+    public int[][] rotate() {
 
         int[][] rotated = new int[this.form[0].length][this.form.length];
 
@@ -41,6 +40,6 @@ public class Block {
             }
         }
 
-        this.form = rotated;
+        return rotated;
     }
 }
