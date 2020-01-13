@@ -9,6 +9,9 @@ import tetris.model.control.UserControl;
 import tetris.model.map.Block;
 import tetris.model.map.Map;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @ToString
 public abstract class AbstractGame implements Game {
@@ -51,6 +54,8 @@ public abstract class AbstractGame implements Game {
                 this.hit(this.getPosition().getX(), this.getYWhenHit());
                 this.blocks.next();
                 this.position = Position.newPosition(this.map, this.getCurrentBlock());
+
+                this.survive();
             } else {
 
                 throw new UserControlException.Builder(UserControlExceptionTypes.wrongControl)
@@ -59,6 +64,43 @@ public abstract class AbstractGame implements Game {
         }
 
         postCommand();
+    }
+
+    private void survive() {
+
+        List<Integer> surviveLines = new ArrayList<>();
+
+        int mapHeight = this.map.getTiles().length;
+        int mapWidth = this.map.getTiles()[0].length;
+
+        for (int i = 0; i < mapHeight; i++) {
+
+            // TODO. 알고리즘 리팩토링하자,,
+            int filledSize = 0;
+
+            for (int j = 0; j < mapWidth; j++) {
+
+                if (this.map.getTiles()[i][j] > 0) {
+
+                    filledSize++;
+                }
+            }
+
+            if (filledSize > 0 && filledSize < mapWidth) {
+
+                surviveLines.add(i);
+            }
+        }
+
+        int[][] newTiles = new int[mapHeight][mapWidth];
+        int startIndex = mapHeight - surviveLines.size();
+
+        for (int i = 0; i < surviveLines.size(); i++) {
+
+            newTiles[startIndex + i] = this.map.getTiles()[surviveLines.get(i)];
+        }
+
+        this.map.setTilesSyncronized(newTiles);
     }
 
     private void moveBlock(UserControl control, int point) throws UserControlException {
@@ -155,15 +197,9 @@ public abstract class AbstractGame implements Game {
 
             for (int j = 0; j < form[0].length; j++) {
 
-                try {
+                if (form[i][j] > 0) {
 
-                    if (form[i][j] > 0) {
-
-                        this.getMap().getTiles()[y + i][x + j] = form[i][j];
-                    }
-                } catch (Exception e) {
-
-                    System.out.println(e);
+                    this.getMap().getTiles()[y + i][x + j] = form[i][j];
                 }
             }
         }

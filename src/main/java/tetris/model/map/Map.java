@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public class Map {
 
-    private final int[][] tiles;
+    private int[][] tiles;
 
     private final int centerX;
     private final int centerY;
@@ -39,6 +39,11 @@ public class Map {
         }
 
         return true;
+    }
+
+    public synchronized void setTilesSyncronized(int[][] newTiles) {
+
+        this.tiles = newTiles;
     }
 
     private boolean isFilled(int x, int y) {
